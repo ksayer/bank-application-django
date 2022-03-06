@@ -7,6 +7,15 @@
 <body>
 {% if request.user.is_authenticated %}
     <h3>Добро пожаловать в личный кабинет, {{ request.user.username }}. <a href="{% url 'logout' %}">Выйти</a></h3>
+    {% if request.user.wallets.all %}
+        <form action="/app_users/send_money/"><button>Перевести</button></form>
+        {% for wallet in request.user.wallets.all %}
+            <p>{{ wallet.name }} - {{ wallet.balance }} $</p>
+        {% endfor %}
+    {% else %}
+        <h4>У вас нету счетов</h4>
+    {% endif %}
+
 {% else %}
     <h3>Вы не аутентифицированы. <a href="{% url 'login' %}">Войти</a></h3>
 {% endif %}

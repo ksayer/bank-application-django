@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Главная страница</title>
+</head>
+<body>
+<h2>Главная страница</h2>
+{% if request.user.is_authenticated %}
+    <h3>
+        Здравствуйте, {{ request.user.username }}.
+        <a style="background-color: coral" href="{% url 'account' %}">Личный кабинет  </a>
+        <a style="background-color: #f5dd5d" href="{% url 'logout' %}">Выйти</a>
+    </h3>
+{% else %}
+    <h3>Вы не аутентифицированы.
+        <a style="background-color: chartreuse" href="{% url 'login' %}">Войти</a>
+        <a style="background-color: #f5dd5d" href="{% url 'registration' %}"> / Зарегистрироваться</a></h3>
+{% endif %}
+</body>
+</html>
