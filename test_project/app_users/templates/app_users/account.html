@@ -6,9 +6,12 @@
 </head>
 <body>
 {% if request.user.is_authenticated %}
-    <h3>Добро пожаловать в личный кабинет, {{ request.user.username }}. <a href="{% url 'logout' %}">Выйти</a></h3>
+    <h3>Добро пожаловать в личный кабинет, {{ request.user.username }}.
+        <nav>
+        <a href="{% url 'logout' %}">Выйти</a></h3>
+        </nav>
     {% if request.user.wallets.all %}
-        <form action="/app_users/send_money/"><button>Перевести</button></form>
+        <form action="/app_users/find_receiver/" method="get"><button>Перевести</button></form>
         {% for wallet in request.user.wallets.all %}
             <p>{{ wallet.name }} - {{ wallet.balance }} $</p>
         {% endfor %}

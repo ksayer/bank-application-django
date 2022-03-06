@@ -2,10 +2,11 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
+from ..models import Wallet
 
 USERNAME = 'user'
 PASSWORD = 'qweQAZ!@#'
-
+NAME = 'name'
 
 class MainPage(TestCase):
 
@@ -109,3 +110,29 @@ class TestLoginLogout(TestCase):
         response = self.client.get('/app_users/logout/')
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, '/app_users/')
+
+
+class TestFindReceiver(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        user = User.objects.create_user(
+            username=USERNAME,
+            password=PASSWORD
+        )
+        Wallet.objects.create(
+            user=user,
+            name=NAME
+        )
+
+    def test_find_receiver_page_uses_right_url(self):
+        response = self.client.get('/app_users/find_receiver/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_find_receiver_uses_right_template(self):
+        response = self.client.get(reverse('find_receiver'))
+        self.assertTemplateUsed(response, 'app_users/find_receiver.html')
+
+    def test_post(self):
+        response = self.client.post((reverse('find_receiver')), data={'wallet_id': 1})
+        self.assertEqual(response.status_code, 200)

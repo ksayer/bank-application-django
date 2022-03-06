@@ -1,8 +1,11 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import generic
 from django.contrib.auth import views
+from .models import Wallet
 
 
 class MainPage(generic.TemplateView):
@@ -38,3 +41,16 @@ class LogInView(views.LoginView):
 
 class LogOutView(views.LogoutView):
     pass
+
+
+class FindReceiverView(generic.View):
+    def get(self, request):
+        return render(self.request, 'app_users/find_receiver.html')
+
+    def post(self, request):
+        wallet_id = request.POST['wallet_id']
+        wallet = Wallet.objects.select_related('user').only('name', 'user__username').filter(id=wallet_id).first()
+        if wallet:
+            return render(self.request, 'app_users/find_receiver.html', context={'wallet': wallet})
+        else:
+            return render(self.request, 'app_users/find_receiver.html', context={'receiver': []})

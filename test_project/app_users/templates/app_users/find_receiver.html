@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Перевод</title>
+</head>
+<body>
+    <h2>Перевод на счёт другого пользователя</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>
+            <input type="text" name="wallet_id">
+        </label>
+        <button type="submit">Найти</button>
+    </form>
+
+    {% if request.method == "POST" %}
+        {% if wallet %}
+            <h4>Найденный получатель: </h4>
+                <p>Пользователь:{{ wallet.user }}</p>
+                <p>Название счета: {{ wallet.name }}</p>
+                <p>Номер счёта: {{ wallet.id }}</p>
+                <a style="background-color: gold" href="#">Перевести $ {{ wallet.user }}</a>
+        {% else %}
+            <p>Не удалось найти пользователя с таким счётом</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
