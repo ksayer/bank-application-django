@@ -5,8 +5,12 @@ from django.urls import reverse
 from ..models import Wallet
 
 USERNAME = 'user'
+USERNAME_2 = 'user2'
 PASSWORD = 'qweQAZ!@#'
 NAME = 'name'
+BALANCE = 1000
+SEND_MONEY = 300
+
 
 class MainPage(TestCase):
 
@@ -136,3 +140,59 @@ class TestFindReceiver(TestCase):
     def test_post(self):
         response = self.client.post((reverse('find_receiver')), data={'wallet_id': 1})
         self.assertEqual(response.status_code, 200)
+
+
+class TestTransferMoney(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        user = User.objects.create_user(
+            username=USERNAME,
+            password=PASSWORD
+        )
+        user_2 = User.objects.create_user(
+            username=USERNAME_2,
+            password=PASSWORD
+        )
+        Wallet.objects.create(
+            user=user,
+            name=NAME,
+            balance=BALANCE
+        )
+
+        Wallet.objects.create(
+            user=user,
+            name=NAME,
+            balance=BALANCE
+        )
+
+        Wallet.objects.create(
+            user=user_2,
+            name=NAME,
+            balance=BALANCE
+        )
+
+    def test_transfer_page_uses_right_url(self):
+        response = self.client.get('/app_users/transfer/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_transfer_uses_right_template(self):
+        response = self.client.get(reverse('transfer'))
+        self.assertTemplateUsed(response, 'app_users/transfer.html')
+
+    def test_post_enough_money(self):
+        self.client.post(reverse('transfer'), data={'wallet_sender': [1, 2],
+                                                    'wallet_receiver_id': 3,
+                                                    'number_money': SEND_MONEY})
+        check_money_sender = Wallet.objects.get(id=1).balance
+        check_money_receiver = Wallet.objects.get(id=3).balance
+        self.assertEqual(check_money_sender, BALANCE - (SEND_MONEY / 2))
+        self.assertEqual(check_money_receiver, BALANCE + SEND_MONEY)
+
+    def test_post_not_enough_money(self):
+        self.client.post(reverse('transfer'), data={'wallet_sender': [1, 2],
+                                                    'wallet_receiver_id': 3,
+                                                    'number_money': SEND_MONEY * 10})
+        check_money_sender = Wallet.objects.get(id=1).balance
+        check_money_receiver = Wallet.objects.get(id=3).balance
+        self.assertEqual(check_money_sender, BALANCE)
+        self.assertEqual(check_money_receiver, BALANCE)

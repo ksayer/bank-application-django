@@ -20,7 +20,7 @@
                 <p>Пользователь:{{ wallet.user }}</p>
                 <p>Название счета: {{ wallet.name }}</p>
                 <p>Номер счёта: {{ wallet.id }}</p>
-                <a style="background-color: gold" href="#">Перевести $ {{ wallet.user }}</a>
+                <a style="background-color: gold" href="{% url 'transfer'%}?receiver_id={{wallet.id}}">Перевести $ {{ wallet.user }}</a>
         {% else %}
             <p>Не удалось найти пользователя с таким счётом</p>
         {% endif %}

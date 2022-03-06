@@ -5,7 +5,7 @@ from django.db import models
 class Wallet(models.Model):
     """Модель счёта пользователя"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wallets', verbose_name='Пользователь')
-    balance = models.DecimalField(max_digits=20, decimal_places=2, default=0, verbose_name='Баланс')
+    balance = models.PositiveIntegerField(default=0, verbose_name='Баланс')
     name = models.CharField(max_length=128, verbose_name='Название')
 
     def __str__(self):
@@ -39,7 +39,7 @@ class Transfer(models.Model):
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE,
                                     related_name='transfers', verbose_name='Транзакция')
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transfers', verbose_name='Счёт')
-    number = models.DecimalField(max_digits=20, decimal_places=2, verbose_name='Количество')
+    number = models.PositiveIntegerField(default=0, verbose_name='Количество')
     operation = models.CharField(max_length=1, choices=OPERATION_CHOICES, verbose_name='Операция')
     date = models.DateField(auto_now_add=True, verbose_name='Дата')
 

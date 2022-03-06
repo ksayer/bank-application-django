@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Перевод $</title>
+</head>
+<body>
+    <h2>Перевод $ на счёт {{ receiver_id }}</h2>
+    <h4>Выберите счет(а) для списания</h4>
+    <form method="post">
+        {% csrf_token %}
+        {% for wallet in wallets %}
+            <label>№{{ wallet.id }}. {{ wallet.name }} - {{ wallet.balance }}$<input type="checkbox" name="wallet_sender" value="{{ wallet.id }}"></label><br>
+        {% endfor %}
+    <h4>Выберите сумму для перевода</h4>
+        <label>
+            <input type="hidden" name="wallet_receiver_id" value="{{ receiver_id }}">
+            <input type="number" name="number_money">
+        </label>
+        <button type="submit">Подтверждаю перевод</button>
+    </form>
+</body>
+</html>
