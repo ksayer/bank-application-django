@@ -9,7 +9,7 @@
     <form method="post">
         {% csrf_token %}
         <label>
-            <input type="text" name="wallet_id">
+            Введите № счёта: <input type="text" name="wallet_id">
         </label>
         <button type="submit">Найти</button>
     </form>
@@ -22,7 +22,11 @@
                 <p>Номер счёта: {{ wallet.id }}</p>
                 <a style="background-color: gold" href="{% url 'transfer'%}?receiver_id={{wallet.id}}">Перевести $ {{ wallet.user }}</a>
         {% else %}
-            <p>Не удалось найти пользователя с таким счётом</p>
+            {% if answer %}
+                <p>{{ answer }}. Попробуйте еще раз</p>
+            {% else %}
+                <p>Не удалось найти пользователя с таким счётом</p>
+            {% endif %}
         {% endif %}
     {% endif %}
 </body>

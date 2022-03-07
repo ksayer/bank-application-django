@@ -1,9 +1,9 @@
 from typing import List
 
 from django.contrib.auth.models import User
+from django.db import transaction
 
 from .models import Wallet, Transaction, Transfer
-from django.db import transaction
 
 
 def reduce_money(wallets: List[str], number_money: str, transact: Transaction):
@@ -11,6 +11,7 @@ def reduce_money(wallets: List[str], number_money: str, transact: Transaction):
     вызывается исключение. Создаем на каждый перевод объект трансфера в БД"""
     part_money = int(number_money) / len(wallets)
     wallets = Wallet.objects.filter(id__in=wallets).only('balance')
+
     for wallet in wallets:
         if wallet.balance < part_money:
             raise ValueError(wallet.id)
@@ -32,6 +33,7 @@ def increase_money(wallet_receiver_id: str, number_money: str, transact: Transac
     Transfer.objects.create(
         operation='r',
         transaction=transact,
+        number_money=number_money,
         wallet=wallet,
     )
 
@@ -44,6 +46,7 @@ def send_money(wallets: List[str], number_money: str, wallet_receiver_id: str):
     transact = Transaction.objects.create(
         receiver=receiver,
         sender=sender,
+        number_money=number_money,
     )
 
     reduce_money(wallets, number_money, transact)

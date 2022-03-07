@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from ..models import Wallet
+from ..models import Wallet, Transaction
 
 USERNAME = 'user'
 USERNAME_2 = 'user2'
@@ -196,3 +196,14 @@ class TestTransferMoney(TestCase):
         check_money_receiver = Wallet.objects.get(id=3).balance
         self.assertEqual(check_money_sender, BALANCE)
         self.assertEqual(check_money_receiver, BALANCE)
+
+
+class TestHistoryTransaction(TestCase):
+
+    def test_history_page_uses_right_url(self):
+        response = self.client.get('/app_users/account/history/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_history_page_uses_right_template(self):
+        response = self.client.get(reverse('history'))
+        self.assertTemplateUsed(response, 'app_users/history.html')

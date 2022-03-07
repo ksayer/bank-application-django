@@ -8,8 +8,9 @@
 {% if request.user.is_authenticated %}
     <h3>Добро пожаловать в личный кабинет, {{ request.user.username }}.
         <nav>
-        <a href="{% url 'logout' %}">Выйти</a></h3>
-        </nav>
+        <a href="{% url 'logout' %}">Выйти</a> |
+        <a href="{% url 'history' %}">История моих переводов</a>
+        </nav></h3>
     {% if request.user.wallets.all %}
         <form action="/app_users/find_receiver/" method="get"><button>Перевести</button></form>
         {% for wallet in request.user.wallets.all %}

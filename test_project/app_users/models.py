@@ -21,6 +21,7 @@ class Transaction(models.Model):
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions_receiver', verbose_name='Получатель')
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions_sender', verbose_name='Отправитель')
     date = models.DateField(auto_now_add=True, verbose_name='Дата')
+    number_money = models.PositiveIntegerField(default=0, verbose_name='Сумма перевода')
 
     def __str__(self):
         return f"ID{self.id}.{self.date}: {self.sender} -> {self.receiver}"
@@ -39,7 +40,7 @@ class Transfer(models.Model):
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE,
                                     related_name='transfers', verbose_name='Транзакция')
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transfers', verbose_name='Счёт')
-    number = models.PositiveIntegerField(default=0, verbose_name='Количество')
+    number_money = models.IntegerField(default=0, verbose_name='Количество')
     operation = models.CharField(max_length=1, choices=OPERATION_CHOICES, verbose_name='Операция')
     date = models.DateField(auto_now_add=True, verbose_name='Дата')
 

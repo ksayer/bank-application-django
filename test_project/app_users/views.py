@@ -1,12 +1,15 @@
 from typing import List
-from .utils import send_money
+
 from django.contrib.auth import authenticate, login
+from django.contrib.auth import views
 from django.contrib.auth.forms import UserCreationForm
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import generic
-from django.contrib.auth import views
-from .models import Wallet
+
+from .models import Wallet, Transaction
+from .utils import send_money
 
 
 class MainPage(generic.TemplateView):
@@ -46,16 +49,21 @@ class LogOutView(views.LogoutView):
 
 class FindReceiverView(generic.View):
     """Поиск счёта на который пользователь хочет перевести деньги"""
+
     def get(self, request):
         return render(self.request, 'app_users/find_receiver.html')
 
     def post(self, request):
+        """Поиск введенного кошелька. Если кошелек найден, то проверяем не принадлежит ли он искателю."""
         wallet_id = request.POST['wallet_id']
         wallet = Wallet.objects.select_related('user').only('name', 'user__username').filter(id=wallet_id).first()
         if wallet:
-            return render(self.request, 'app_users/find_receiver.html', context={'wallet': wallet})
+            if wallet.user_id == request.user.id:
+                return render(self.request, 'app_users/find_receiver.html', context={'answer': 'Это ваш счёт'})
+            else:
+                return render(self.request, 'app_users/find_receiver.html', context={'wallet': wallet})
         else:
-            return render(self.request, 'app_users/find_receiver.html', context={'receiver': []})
+            return render(self.request, 'app_users/find_receiver.html', context={'answer': []})
 
 
 class TransferView(generic.ListView):
@@ -75,8 +83,9 @@ class TransferView(generic.ListView):
         return context
 
     def post(self, request):
-        """Берем ID кошелька, куда совершаем перевод. Затем берем кошельки, выбранные пользователем, с которых
-        будем списывать $. Совершаем перевод."""
+        """Берем ID кошелька, куда совершаем перевод. Затем берем кошельки, выбранные пользователем, с которых будем
+        списывать $. Совершаем перевод. Если денег не хватило на каком либо счете - сообщаем пользователю и отменяем
+        транзакцию """
         wallet_receiver_id: str = request.POST.get('wallet_receiver_id')
         wallets: List[str] = request.POST.getlist('wallet_sender')
         number_money: str = request.POST['number_money']
@@ -87,4 +96,18 @@ class TransferView(generic.ListView):
             return HttpResponse(f"Недостаточно денег на счету №{ex}")
 
 
+class HistoryView(generic.ListView):
+    model = Transaction
+    template_name = 'app_users/history.html'
+    context_object_name = 'transactions'
+
+    def get_queryset(self):
+        """Отбираем транзакции пользователя, только те, в которых он переводил $"""
+        user_transactions_as_sender = Transaction.objects.filter(sender_id=self.request.user.id).order_by('-id')
+        return user_transactions_as_sender
+
+
+class WalletDetail(generic.DetailView):
+    model = Wallet
+    template_name = 'app_users/wallet_detail.html'
 

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>История переводов</title>
+</head>
+<body>
+    {% for transaction in transactions %}
+        <p>№ транзакции - {{ transaction.id }}. <b>{{ transaction.date }}</b></p>
+        Переведено {{transaction.number_money}}$ cо счетов
+        {% for wallet in transaction.transfers.all %}
+            {% if not forloop.last %}
+                 <a href="{% url 'wallet_detail' wallet.wallet_id %}">№{{ wallet.wallet_id }}</a>
+            {% else %}
+                пользователю <b>{{ transaction.receiver }}</b> на счет №{{ wallet.wallet_id }}
+            {% endif %}
+        {% endfor %}
+    {% empty %}
+        История пуста
+    {% endfor %}
+</body>
+</html>

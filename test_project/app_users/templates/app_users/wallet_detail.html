@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Детали счёта №{{ object.id }}</title>
+</head>
+<body>
+    {% if request.user.id == object.user.id %}
+        <h2>Детали счёта №{{ object.id }}</h2>
+        <p>ID: {{ object.id }}</p>
+        <p>User: {{ object.user }}</p>
+        <p>Name: {{ object.name }}</p>
+        <p>Date:{{ object.date }}</p>
+        <p>Баланс: {{ object.balance }}</p>
+    {% else %}
+        Ошибка. Это не ваш счёт
+    {% endif %}
+</body>
+</html>
