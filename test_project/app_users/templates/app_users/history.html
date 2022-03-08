@@ -5,6 +5,16 @@
     <title>История переводов</title>
 </head>
 <body>
+    <h2>История</h2>
+    <form action="{% url 'history' %}">
+        {% csrf_token %}
+        <label>
+            <input type="number" name="wallet_id"> № счёта <br>
+            <input type="date" name="date"> Дата <br>
+            <input type="number" name="sum_transfer"> Сумма перевода <br>
+            <button type="submit">Найти</button>
+        </label>
+    </form>
     {% for transaction in transactions %}
         <p>№ транзакции - {{ transaction.id }}. <b>{{ transaction.date }}</b></p>
         Переведено {{transaction.number_money}}$ cо счетов
@@ -18,5 +28,23 @@
     {% empty %}
         История пуста
     {% endfor %}
+    <br> <br>
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?{{ wallet_id }}{{ date }}{{ sum_transfer }}page=1">&laquo; Первая</a>
+                <a href="?{{ wallet_id }}{{ date }}{{ sum_transfer }}page={{ page_obj.previous_page_number }}">Предыдущая</a>
+            {% endif %}
+
+            <span class="current">
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?{{ wallet_id }}{{ date }}{{ sum_transfer }}page={{ page_obj.next_page_number }}">Следующая</a>
+                <a href="?{{ wallet_id }}{{ date }}{{ sum_transfer }}page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
 </body>
 </html>

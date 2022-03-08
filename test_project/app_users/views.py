@@ -4,14 +4,13 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import views
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import generic
 
-from .models import Wallet, Transaction, Transfer
 from .forms import WalletForm
+from .models import Wallet, Transaction, Transfer
 from .utils import send_money
 
 
@@ -103,11 +102,30 @@ class HistoryView(generic.ListView):
     model = Transaction
     template_name = 'app_users/history.html'
     context_object_name = 'transactions'
+    paginate_by = 5
 
     def get_queryset(self):
-        """Отбираем транзакции пользователя, только те, в которых он переводил $"""
+        """Отбираем транзакции пользователя, только те, в которых он переводил $. Фильтруем по параметрам GET"""
         user_transactions_as_sender = Transaction.objects.filter(sender_id=self.request.user.id).order_by('-id')
+        wallet_id = self.request.GET.get('wallet_id', '')
+        date = self.request.GET.get('date', '')
+        sum_transfer = self.request.GET.get('sum_transfer', '')
+        if wallet_id:
+            user_transactions_as_sender = user_transactions_as_sender.filter(transfers__wallet_id=wallet_id,
+                                                                             transfers__operation='s')
+        if date:
+            user_transactions_as_sender = user_transactions_as_sender.filter(date=date)
+        if sum_transfer:
+            user_transactions_as_sender = user_transactions_as_sender.filter(number_money=sum_transfer)
         return user_transactions_as_sender
+
+    def get_context_data(self, *args, **kwargs):
+        """Добавляем в контекст данные из формы поиска для формирования ссылок пагинатора"""
+        context = super().get_context_data(*args, **kwargs)
+        context['wallet_id'] = f'wallet_id={self.request.GET.get("wallet_id", "")}&'
+        context['date'] = f'date={self.request.GET.get("date", "")}&'
+        context['sum_transfer'] = f'sum_transfer={self.request.GET.get("sum_transfer", "")}&'
+        return context
 
 
 class WalletDetail(generic.DetailView):
@@ -115,9 +133,15 @@ class WalletDetail(generic.DetailView):
     template_name = 'app_users/wallet_detail.html'
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        """Отбираем счета пользователя и фильтруем по параметрам GET."""
         context = super().get_context_data(**kwargs)
-        pk = self.kwargs.get(self.pk_url_kwarg)
-        transfers = Transfer.objects.filter(wallet_id=pk).order_by('-id')
+        transfers = Transfer.objects.filter(wallet_id=self.kwargs.get(self.pk_url_kwarg)).order_by('-id')
+        date = self.request.GET.get('date', '')
+        sum_transfer = self.request.GET.get('sum_transfer', '')
+        if date:
+            transfers = transfers.filter(date=date)
+        if sum_transfer:
+            transfers = transfers.filter(number_money=sum_transfer)
         context['transfers'] = transfers
         return context
 

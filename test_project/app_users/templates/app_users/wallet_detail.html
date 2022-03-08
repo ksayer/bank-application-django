@@ -12,7 +12,15 @@
         <p>Name: {{ object.name }}</p>
         <p>Баланс: {{ object.balance }}</p>
         <h4>История счёта</h4>
-        {% for transfer in transfers %}
+         <form action="{% url 'wallet_detail' object.id %}">
+        {% csrf_token %}
+        <label>
+            <input type="date" name="date"> Дата <br>
+            <input type="number" name="sum_transfer"> Сумма <br>
+            <button type="submit">Найти</button>
+        </label>
+    </form>
+        {% for transfer in transfers%}
             {% if transfer.operation ==  'r' %}
                 <p style="color: blue">{{ transfer.date }} {{ transfer.get_operation_display }} {{ transfer.number_money }}$</p>
             {% else %}
