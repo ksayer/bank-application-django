@@ -31,13 +31,12 @@ class MainPage(TestCase):
 
     def test_main_page_for_not_authenticated_user(self):
         response = self.client.get(reverse('main'))
-        self.assertContains(response, 'Вы не аутентифицированы')
-        self.assertContains(response, 'Войти')
+        self.assertContains(response, 'Зарегистрироваться')
 
     def test_main_page_for_authenticated_user(self):
         self.client.login(username=USERNAME, password=PASSWORD)
         response = self.client.get(reverse('main'))
-        self.assertContains(response, 'Здравствуйте')
+        self.assertContains(response, 'Выйти')
 
 
 class TestAccountPage(TestCase):

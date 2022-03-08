@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Личный кабинет</title>
-</head>
-<body>
+{% extends 'app_users/main.html' %}
+    {% block title %}Личный кабинет{% endblock %}
+{% block body %}
 {% if request.user.is_authenticated %}
     <h3>Добро пожаловать в личный кабинет, {{ request.user.username }}.
         <nav>
-        <a href="{% url 'logout' %}">Выйти</a> |
         <a href="{% url 'history' %}">История моих переводов</a> |
         <a href="{% url 'create_wallet' %}">Создать счёт</a>
         </nav></h3>
@@ -24,5 +19,4 @@
 {% else %}
     <h3>Вы не аутентифицированы. <a href="{% url 'login' %}">Войти</a></h3>
 {% endif %}
-</body>
-</html>
+{% endblock %}

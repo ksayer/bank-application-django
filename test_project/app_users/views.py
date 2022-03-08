@@ -106,7 +106,9 @@ class HistoryView(generic.ListView):
 
     def get_queryset(self):
         """Отбираем транзакции пользователя, только те, в которых он переводил $. Фильтруем по параметрам GET"""
-        user_transactions_as_sender = Transaction.objects.filter(sender_id=self.request.user.id).order_by('-id')
+        user_transactions_as_sender = Transaction.objects.select_related('receiver').prefetch_related(
+            'transfers').filter(sender_id=self.request.user.id).order_by('-id')
+
         wallet_id = self.request.GET.get('wallet_id', '')
         date = self.request.GET.get('date', '')
         sum_transfer = self.request.GET.get('sum_transfer', '')
@@ -135,7 +137,8 @@ class WalletDetail(generic.DetailView):
     def get_context_data(self, *, object_list=None, **kwargs):
         """Отбираем счета пользователя и фильтруем по параметрам GET."""
         context = super().get_context_data(**kwargs)
-        transfers = Transfer.objects.filter(wallet_id=self.kwargs.get(self.pk_url_kwarg)).order_by('-id')
+        transfers = Transfer.objects.defer('wallet', 'transaction').filter(
+            wallet_id=self.kwargs.get(self.pk_url_kwarg)).order_by('-id')
         date = self.request.GET.get('date', '')
         sum_transfer = self.request.GET.get('sum_transfer', '')
         if date:
@@ -157,3 +160,4 @@ class CreateWalletFormView(generic.View):
             form.cleaned_data['user'] = User.objects.get(id=request.user.id)
             Wallet.objects.create(**form.cleaned_data)
             return HttpResponseRedirect(reverse('account'))
+        return render(request, 'app_users/create_wallet.html', context={'form': form})

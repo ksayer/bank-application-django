@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Создать счёт</title>
-</head>
-<body>
+{% extends 'app_users/main.html' %}
+    {% block title %}Создать счёт{% endblock %}
+{% block body %}
     <h2>Создание счёта</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Создать</button>
     </form>
-</body>
-</html>
+{% endblock %}

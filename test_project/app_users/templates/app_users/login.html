@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Вход</title>
-</head>
+{% extends 'app_users/main.html' %}
+    {% block title %}Вход{% endblock %}
+{% block body %}
 <body>
 <h3>Вход</h3>
 <form method="post">
@@ -11,5 +8,4 @@
     {{ form.as_p }}
     <button type="submit">Войти</button>
 </form>
-</body>
-</html>
+{% endblock %}

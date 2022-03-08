@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Перевод</title>
-</head>
-<body>
+{% extends 'app_users/main.html' %}
+    {% block title %}Перевод{% endblock %}
+{% block body %}
     <h2>Перевод на счёт другого пользователя</h2>
     <form method="post">
         {% csrf_token %}
@@ -29,5 +25,4 @@
             {% endif %}
         {% endif %}
     {% endif %}
-</body>
-</html>
+{% endblock %}

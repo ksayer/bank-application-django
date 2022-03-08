@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>История переводов</title>
-</head>
+{% extends 'app_users/main.html' %}
+{% block title %}История переводов{% endblock %}
+{% block body %}
 <body>
     <h2>История</h2>
     <form action="{% url 'history' %}">
@@ -18,11 +15,11 @@
     {% for transaction in transactions %}
         <p>№ транзакции - {{ transaction.id }}. <b>{{ transaction.date }}</b></p>
         Переведено {{transaction.number_money}}$ cо счетов
-        {% for wallet in transaction.transfers.all %}
+        {% for transfer in transaction.transfers.all %}
             {% if not forloop.last %}
-                 <a href="{% url 'wallet_detail' wallet.wallet_id %}">№{{ wallet.wallet_id }}</a>
+                 <a href="{% url 'wallet_detail' transfer.wallet_id %}">№{{ transfer.wallet_id }}</a>
             {% else %}
-                пользователю <b>{{ transaction.receiver }}</b> на счет №{{ wallet.wallet_id }}
+                пользователю <b>{{ transaction.receiver }}</b> на счет №{{ transfer.wallet_id }}
             {% endif %}
         {% endfor %}
     {% empty %}
@@ -46,5 +43,4 @@
             {% endif %}
         </span>
     </div>
-</body>
-</html>
+{% endblock %}

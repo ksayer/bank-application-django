@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Перевод $</title>
-</head>
+{% extends 'app_users/main.html' %}
+{% block title %}Перевод ${% endblock %}
+{% block body %}
 <body>
     <h2>Перевод $ на счёт {{ receiver_id }}</h2>
     <h4>Выберите счет(а) для списания</h4>
@@ -19,5 +16,4 @@
         </label>
         <button type="submit">Подтверждаю перевод</button>
     </form>
-</body>
-</html>
+{% endblock %}

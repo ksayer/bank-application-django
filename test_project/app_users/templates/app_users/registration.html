@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Регистрация</title>
-</head>
+{% extends 'app_users/main.html' %}
+{% block title %}Регистрация{% endblock %}
+{% block body %}
 <body>
     <h2>Регистрация</h2>
     <form method="post">
@@ -11,5 +8,4 @@
         {{ form.as_p }}
         <button type="submit">Зарегистрироваться</button>
     </form>
-</body>
-</html>
+{% endblock %}
