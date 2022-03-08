@@ -22,6 +22,7 @@ def reduce_money(wallets: List[str], number_money: str, transact: Transaction):
             operation='s',
             transaction=transact,
             wallet=wallet,
+            number_money=part_money
         )
 
 

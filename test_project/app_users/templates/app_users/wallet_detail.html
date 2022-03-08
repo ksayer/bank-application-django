@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Детали счёта №{{ object.id }}</title>
@@ -10,8 +10,15 @@
         <p>ID: {{ object.id }}</p>
         <p>User: {{ object.user }}</p>
         <p>Name: {{ object.name }}</p>
-        <p>Date:{{ object.date }}</p>
         <p>Баланс: {{ object.balance }}</p>
+        <h4>История счёта</h4>
+        {% for transfer in transfers %}
+            {% if transfer.operation ==  'r' %}
+                <p style="color: blue">{{ transfer.date }} {{ transfer.get_operation_display }} {{ transfer.number_money }}$</p>
+            {% else %}
+                <p style="color: crimson">{{ transfer.date }} {{ transfer.get_operation_display }} {{ transfer.number_money }}$</p>
+            {% endif %}
+        {% endfor %}
     {% else %}
         Ошибка. Это не ваш счёт
     {% endif %}

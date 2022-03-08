@@ -9,12 +9,13 @@
     <h3>Добро пожаловать в личный кабинет, {{ request.user.username }}.
         <nav>
         <a href="{% url 'logout' %}">Выйти</a> |
-        <a href="{% url 'history' %}">История моих переводов</a>
+        <a href="{% url 'history' %}">История моих переводов</a> |
+        <a href="{% url 'create_wallet' %}">Создать счёт</a>
         </nav></h3>
     {% if request.user.wallets.all %}
         <form action="/app_users/find_receiver/" method="get"><button>Перевести</button></form>
         {% for wallet in request.user.wallets.all %}
-            <p>{{ wallet.name }} - {{ wallet.balance }} $</p>
+            <p><a href="{% url 'wallet_detail' wallet.id %} ">{{ wallet.name }}</a> - {{ wallet.balance }} $</p>
         {% endfor %}
     {% else %}
         <h4>У вас нету счетов</h4>

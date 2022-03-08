@@ -3,12 +3,15 @@ from typing import List
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views import generic
 
-from .models import Wallet, Transaction
+from .models import Wallet, Transaction, Transfer
+from .forms import WalletForm
 from .utils import send_money
 
 
@@ -111,3 +114,22 @@ class WalletDetail(generic.DetailView):
     model = Wallet
     template_name = 'app_users/wallet_detail.html'
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        transfers = Transfer.objects.filter(wallet_id=pk).order_by('-id')
+        context['transfers'] = transfers
+        return context
+
+
+class CreateWalletFormView(generic.View):
+    def get(self, request):
+        form = WalletForm()
+        return render(request, 'app_users/create_wallet.html', context={'form': form})
+
+    def post(self, request):
+        form = WalletForm(request.POST)
+        if form.is_valid():
+            form.cleaned_data['user'] = User.objects.get(id=request.user.id)
+            Wallet.objects.create(**form.cleaned_data)
+            return HttpResponseRedirect(reverse('account'))

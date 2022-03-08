@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import AccountView, LogInView, RegisterView, LogOutView, MainPage, FindReceiverView, TransferView, \
-    HistoryView, WalletDetail
+    HistoryView, WalletDetail, CreateWalletFormView
 
 urlpatterns = [
     path('', MainPage.as_view(), name='main'),
@@ -12,5 +12,6 @@ urlpatterns = [
     path('find_receiver/', FindReceiverView.as_view(), name='find_receiver'),
     path('transfer/', TransferView.as_view(), name='transfer'),
     path('account/history/', HistoryView.as_view(), name='history'),
-    path('account/history/<int:pk>/', WalletDetail.as_view(), name='wallet_detail')
+    path('account/history/<int:pk>/', WalletDetail.as_view(), name='wallet_detail'),
+    path('app_users/create_wallet/', CreateWalletFormView.as_view(), name='create_wallet')
 ]

@@ -4,7 +4,8 @@ from django.db import models
 
 class Wallet(models.Model):
     """Модель счёта пользователя"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wallets', verbose_name='Пользователь')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wallets', verbose_name='Пользователь',
+                             blank=True)
     balance = models.PositiveIntegerField(default=0, verbose_name='Баланс')
     name = models.CharField(max_length=128, verbose_name='Название')
 
@@ -18,8 +19,10 @@ class Wallet(models.Model):
 
 class Transaction(models.Model):
     """Модель транзакции"""
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions_receiver', verbose_name='Получатель')
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions_sender', verbose_name='Отправитель')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions_receiver',
+                                 verbose_name='Получатель')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions_sender',
+                               verbose_name='Отправитель')
     date = models.DateField(auto_now_add=True, verbose_name='Дата')
     number_money = models.PositiveIntegerField(default=0, verbose_name='Сумма перевода')
 
@@ -40,7 +43,7 @@ class Transfer(models.Model):
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE,
                                     related_name='transfers', verbose_name='Транзакция')
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transfers', verbose_name='Счёт')
-    number_money = models.IntegerField(default=0, verbose_name='Количество')
+    number_money = models.IntegerField(null=True, default=None, verbose_name='Количество')
     operation = models.CharField(max_length=1, choices=OPERATION_CHOICES, verbose_name='Операция')
     date = models.DateField(auto_now_add=True, verbose_name='Дата')
 
@@ -50,5 +53,3 @@ class Transfer(models.Model):
     class Meta:
         verbose_name = 'перевод'
         verbose_name_plural = 'переводы'
-
-
