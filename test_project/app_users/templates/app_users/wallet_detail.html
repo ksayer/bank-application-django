@@ -19,9 +19,23 @@
     </form>
         {% for transfer in transfers%}
             {% if transfer.operation ==  'r' %}
-                <p style="color: blue">{{ transfer.date }} {{ transfer.get_operation_display }} {{ transfer.number_money }}$</p>
+                <p style="color: blue">
+                    {{ transfer.date }} {{ transfer.get_operation_display }} {{ transfer.number_money }}$
+                    {% if transfer.status %}
+                        <span style="color: green"><b>Исполнено</b></span>
+                    {% else %}
+                        <span style="color: red"><b>Отменено</b></span>
+                    {% endif %}
+                </p>
             {% else %}
-                <p style="color: crimson">{{ transfer.date }} {{ transfer.get_operation_display }} {{ transfer.number_money }}$</p>
+                <p style="color: crimson">
+                    {{ transfer.date }} {{ transfer.get_operation_display }} {{ transfer.number_money }}$
+                    {% if transfer.status %}
+                        <span style="color: green"><b>Исполнено</b></span>
+                    {% else %}
+                        <span style="color: red"><b>Отменено</b></span>
+                    {% endif %}
+                </p>
             {% endif %}
         {% endfor %}
     {% else %}

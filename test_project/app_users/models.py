@@ -25,6 +25,7 @@ class Transaction(models.Model):
                                verbose_name='Отправитель')
     date = models.DateField(auto_now_add=True, verbose_name='Дата')
     number_money = models.PositiveIntegerField(default=0, verbose_name='Сумма перевода')
+    status = models.BooleanField(default=True, verbose_name='Статус исполнения')
 
     def __str__(self):
         return f"ID{self.id}.{self.date}: {self.sender} -> {self.receiver}"
@@ -46,6 +47,7 @@ class Transfer(models.Model):
     number_money = models.IntegerField(null=True, default=None, verbose_name='Количество')
     operation = models.CharField(max_length=1, choices=OPERATION_CHOICES, verbose_name='Операция')
     date = models.DateField(auto_now_add=True, verbose_name='Дата')
+    status = models.BooleanField(default=True, verbose_name='Статус исполнения')
 
     def __str__(self):
         return f"{self.id}.{self.wallet}"

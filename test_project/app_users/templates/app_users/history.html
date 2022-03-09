@@ -20,6 +20,18 @@
                  <a href="{% url 'wallet_detail' transfer.wallet_id %}">№{{ transfer.wallet_id }}</a>
             {% else %}
                 пользователю <b>{{ transaction.receiver }}</b> на счет №{{ transfer.wallet_id }}
+                {% if transaction.status %}
+                    <span style="color: green"><b>Исполнено</b></span>
+                    <form action="{% url 'cancel_transaction' %}" method="post">
+                    {% csrf_token %}
+                        <label>
+                            <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+                        </label>
+                        <button type="submit">Отменить</button>
+                    </form>
+                {% else %}
+                    <span style="color: red"><b>Отменено</b></span>
+                {% endif %}
             {% endif %}
         {% endfor %}
     {% empty %}

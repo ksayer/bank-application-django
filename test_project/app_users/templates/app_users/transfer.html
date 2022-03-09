@@ -7,7 +7,10 @@
     <form method="post">
         {% csrf_token %}
         {% for wallet in wallets %}
-            <label>№{{ wallet.id }}. {{ wallet.name }} - {{ wallet.balance }}$<input type="checkbox" name="wallet_sender" value="{{ wallet.id }}"></label><br>
+            <label>
+                №{{ wallet.id }}. {{ wallet.name }} - {{ wallet.balance }}$
+                <input type="checkbox" name="wallet_sender" value="{{ wallet.id }}">
+            </label><br>
         {% endfor %}
     <h4>Выберите сумму для перевода</h4>
         <label>

@@ -11,7 +11,7 @@ from django.views import generic
 
 from .forms import WalletForm
 from .models import Wallet, Transaction, Transfer
-from .utils import send_money
+from .utils import send_money, cancel_transaction
 
 
 class MainPage(generic.TemplateView):
@@ -19,11 +19,11 @@ class MainPage(generic.TemplateView):
 
 
 class AccountView(generic.TemplateView):
+    """Личный кабинет"""
     template_name = 'app_users/account.html'
 
 
 class RegisterView(generic.View):
-
     def get(self, request):
         form = UserCreationForm()
         return render(request, 'app_users/registration.html', context={'form': form})
@@ -99,6 +99,7 @@ class TransferView(generic.ListView):
 
 
 class HistoryView(generic.ListView):
+    """Информация о всех переводах, которые совершал пользователь"""
     model = Transaction
     template_name = 'app_users/history.html'
     context_object_name = 'transactions'
@@ -131,6 +132,7 @@ class HistoryView(generic.ListView):
 
 
 class WalletDetail(generic.DetailView):
+    """Детальная информация по каждому счёту"""
     model = Wallet
     template_name = 'app_users/wallet_detail.html'
 
@@ -150,6 +152,7 @@ class WalletDetail(generic.DetailView):
 
 
 class CreateWalletFormView(generic.View):
+    """Создание счёта пользователя"""
     def get(self, request):
         form = WalletForm()
         return render(request, 'app_users/create_wallet.html', context={'form': form})
@@ -161,3 +164,15 @@ class CreateWalletFormView(generic.View):
             Wallet.objects.create(**form.cleaned_data)
             return HttpResponseRedirect(reverse('account'))
         return render(request, 'app_users/create_wallet.html', context={'form': form})
+
+
+class CancelTransaction(generic.View):
+    """Отмена транзакции, если денег не хватает на счёте - сообщаем пользователю."""
+    def post(self, request):
+        transaction = request.POST.get('transaction_id')
+        try:
+            cancel_transaction(transaction)
+            return HttpResponse(f'Транзакция №{transaction} успешно отменена')
+        except ValueError as ex:
+            return HttpResponse(f'Транзакция №{transaction} не может быть отменена из-за недостатка средств на счёте '
+                                f'№{ex}')
